@@ -31,10 +31,11 @@ export const RightSide = styled.div`
     align-items: center;
     justify-content: flex-end;
 
-    a{
+    a, button#notificacao{
         color: #ffffff;
         font-weight: bold;
         text-decoration: none;
+        cursor: pointer;
         margin: 0 12px;
         text-transform: uppercase;
 
@@ -44,22 +45,27 @@ export const RightSide = styled.div`
         }
         position: relative;
     }
-
+    
     a::after{
         content: ' | ';
         position: absolute;
         bottom: 1px;
         padding-left: 10px;
     }
-    a:last-child{
+    /* a:last-child{
         margin:0;
         margin-left: 12px;
-    }
+    } */
     a:last-child::after{
         content: '';
     }
 
-    #notificacao{
+    button#notificacao{
+        background: none;
+        border: none;
+        padding: 0;
+        margin-right:0;
+
         img{
             max-width: 25px;
         }
