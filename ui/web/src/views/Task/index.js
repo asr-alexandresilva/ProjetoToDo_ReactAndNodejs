@@ -22,6 +22,13 @@ import iconeLixeira from '../../assets/lixeira.png';
 function Task() {
     const [lateCount, setLateCount] = useState();
     const [type, setType] = useState();
+    const [id, setId] = useState();
+    const [done, setDone] = useState(false);
+    const [title, setTitle] = useState();
+    const [description, setDescription] = useState();
+    const [date, setDate] = useState();
+    const [hour, setHour] = useState();
+    const [macaddress, setMacaddress] = useState('11:11:11:11:11:11');
 
     async function lateVerify() {
         await api.get(`/task/filter/late/11:11:11:11:11:11`)
@@ -34,6 +41,23 @@ function Task() {
     useEffect(() => {
         lateVerify(); // carrega tarefas atrasadas
     });
+
+    async function save() {
+        try {
+            const response = await api.post('/task', {
+                macaddress,
+                type,
+                title,
+                description,
+                when: `${date}T${hour}:00.000`
+            });
+
+            console.log(response);
+            console.log('Tarefa cadastrada com sucesso!');
+        } catch (error) {
+            console.log('Erro', error);
+        }
+    }
 
     return (
         <S.Container>
@@ -54,29 +78,30 @@ function Task() {
 
                 <S.Input>
                     <label>Título</label>
-                    <input type="text" placeholder="Título da Tarefa"></input>
+                    <input type="text" placeholder="Título da Tarefa" onChange={e => setTitle(e.target.value)} value={title}></input>
                 </S.Input>
 
                 <S.TextArea>
-                    <label>Título</label>
-                    <textarea rows={4} placeholder="Detalhes da Tarefa"></textarea>
+                    <label>Descrição</label>
+                    <textarea rows={4} placeholder="Detalhes da Tarefa" onChange={e => setDescription(e.target.value)} value={description}></textarea>
                 </S.TextArea>
 
                 <S.Input>
                     <label>Data</label>
-                    <input type="date"></input>
+                    <input type="date" onChange={e => setDate(e.target.value)} value={date}></input>
                     <img className="icone" src={iconeCalendario} alt="Ícone Calendário"></img>
                 </S.Input>
 
                 <S.Input>
                     <label>Hora</label>
-                    <input type="time"></input>
+                    <input type="time" onChange={e => setHour(e.target.value)} value={hour}></input>
                     <img className="icone" src={iconeRelogio} alt="Ícone Relógio"></img>
                 </S.Input>
 
                 <S.Options>
                     <div className="containerCheckbox">
-                        <input type="checkbox"></input>
+                        {/* "() => setDone(!done)" guarda em done o valor contrario do que esta armazenado "true" ou "false" */}
+                        <input type="checkbox" checked={done} onChange={() => setDone(!done)}></input>
                         <label>CONCLUÍDO</label>
                     </div>
                     <div className="containerButton">
@@ -86,7 +111,7 @@ function Task() {
                 </S.Options>
 
                 <S.Save>
-                    <button type="button">SALVAR</button>
+                    <button type="button" onClick={save}>SALVAR</button>
                 </S.Save>
             </S.Form>
             <Footer></Footer>

@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Home from './views/Home'; // nao precisa colocar o nome do arquivo, pois por padrao o React pega o "index.js"
-import Task from './views/Task';
+
+import Routes from './routes';
 
 ReactDOM.render(
   <React.StrictMode>
-    {/* <Home></Home> */}
-    <Task />
+    <Routes></Routes>
   </React.StrictMode>,
   document.getElementById('root')
 );
