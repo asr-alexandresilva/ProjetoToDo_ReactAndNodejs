@@ -10,6 +10,8 @@ import * as S from "./styles";
 
 import api from "../../services/api";
 
+import {format} from 'date-fns';
+
 // Meus componentes
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
@@ -19,7 +21,7 @@ import iconeCalendario from '../../assets/calendario.png';
 import iconeRelogio from '../../assets/relogio.png';
 import iconeLixeira from '../../assets/lixeira.png';
 
-function Task() {
+function Task({ match }) {
     const [lateCount, setLateCount] = useState();
     const [type, setType] = useState();
     const [id, setId] = useState();
@@ -40,7 +42,26 @@ function Task() {
 
     useEffect(() => {
         lateVerify(); // carrega tarefas atrasadas
+        loadTaskDetails();
     });
+
+    async function loadTaskDetails() {
+        try {
+            const response = await api.get(`/task/${match.params.id}`);
+            console.log(response);
+
+            setType(response.data.type);
+            setId(response.data._id);
+            setDone(response.data.done);
+            setTitle(response.data.title);
+            setDescription(response.data.description);
+            setDate(format(new Date(response.data.when), 'yyyy-MM-dd'));
+            setHour(format(new Date(response.data.when), 'HH:mm'));
+            setMacaddress(response.data.macaddress);
+        } catch (error) {
+            console.log("Erro", error);
+        }
+    }
 
     async function save() {
         try {

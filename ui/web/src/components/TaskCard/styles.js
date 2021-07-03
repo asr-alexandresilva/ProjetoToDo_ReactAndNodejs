@@ -48,5 +48,6 @@ export const BottomCard = styled.div`
 
     span{
         opacity: 0.6;
+        color: #fff;
     }
 `

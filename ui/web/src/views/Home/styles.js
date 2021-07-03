@@ -30,6 +30,10 @@ export const Content = styled.div`
     padding-bottom: 60px;
     grid-template-columns: repeat(auto-fit, minmax(20%, auto)); // "auto-fit" qtd automatica de colunas | "minmax(20%, auto)" minimo de largura sera 20% da tela e maximo sera automatico (Organiza automatico na tela)
     justify-content: flex-start;
+
+    a{
+        text-decoration: none;
+    }
 `
 
 export const Title = styled.div`

@@ -5,6 +5,7 @@ React,
   useEffect, // funcao que disparada quando a tela esta carregada
 }
   from "react";
+import { Link } from 'react-router-dom';
 
 import * as S from "./styles";
 
@@ -33,7 +34,7 @@ function Home() {
     await api.get(`/task/filter/late/11:11:11:11:11:11`)
       .then(response => {
         setLateCount(response.data.length);
-        console.log(response.data.length);
+        // console.log(response.data.length);
       })
       .catch();
   }
@@ -84,7 +85,9 @@ function Home() {
       <S.Content>
         {
           tasks.map(task => (
-            <TaskCard type={task.type} title={task.title} when={task.when}></TaskCard>
+            <Link to={`/task/${task._id}`}>
+              <TaskCard type={task.type} title={task.title} when={task.when}></TaskCard>
+            </Link>
           ))
         }
       </S.Content>
