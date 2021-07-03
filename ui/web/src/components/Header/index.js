@@ -6,7 +6,7 @@ import imgLogo from '../../assets/logo.png';
 import imgNotificacao from '../../assets/notificacao.png';
 
 function Header({lateCount, clickNotification}) {
-    console.log(lateCount)
+    
     return (
         <S.Container>
             <S.LeftSide>
