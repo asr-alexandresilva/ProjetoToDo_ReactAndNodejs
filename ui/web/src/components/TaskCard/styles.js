@@ -10,7 +10,7 @@ export const Container = styled.div`
     background-color: #343F4D;
     box-shadow: 0px 3px 8px #000000BB;
     transition: all 0.5s;
-    opacity: 0.8;
+    opacity: ${props => props.done ? 0.4 : 0.8};
     cursor: pointer;
     transform: translateY(0);
 

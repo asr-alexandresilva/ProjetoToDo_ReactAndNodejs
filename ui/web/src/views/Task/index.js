@@ -6,11 +6,13 @@ React,
 }
     from "react";
 
+import { Redirect } from 'react-router-dom';
+
 import * as S from "./styles";
 
 import api from "../../services/api";
 
-import {format} from 'date-fns';
+import { format } from 'date-fns';
 
 // Meus componentes
 import Header from "../../components/Header";
@@ -22,14 +24,15 @@ import iconeRelogio from '../../assets/relogio.png';
 import iconeLixeira from '../../assets/lixeira.png';
 
 function Task({ match }) {
+    const [redirect, setRedirect] = useState(false);
     const [lateCount, setLateCount] = useState();
     const [type, setType] = useState();
-    const [id, setId] = useState();
+    const [id, setId] = useState(0);
     const [done, setDone] = useState(false);
-    const [title, setTitle] = useState();
-    const [description, setDescription] = useState();
-    const [date, setDate] = useState();
-    const [hour, setHour] = useState();
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [hour, setHour] = useState('');
     const [macaddress, setMacaddress] = useState('11:11:11:11:11:11');
 
     async function lateVerify() {
@@ -42,8 +45,12 @@ function Task({ match }) {
 
     useEffect(() => {
         lateVerify(); // carrega tarefas atrasadas
-        loadTaskDetails();
-    });
+
+        // carrega tarefas quando vier id no parametro
+        if (match.params.id) {
+            loadTaskDetails();
+        }
+    }, []); //se adicionar array vazio no fim do useEffect, ele nao entre em loop, so carrega dados quando e montado
 
     async function loadTaskDetails() {
         try {
@@ -64,32 +71,62 @@ function Task({ match }) {
     }
 
     async function save() {
+        // validacao de formulario
+        if (!type)
+            return alert('Você informar o tipo da tarefa');
+        else if (!title)
+            return alert('Você informar o título da tarefa');
+        else if (!description)
+            return alert('Você informar a descrição da tarefa');
+        else if (!date)
+            return alert('Você informar a data da tarefa');
+        else if (!hour)
+            return alert('Você informar a hora da tarefa');
+        // -------------------
         try {
-            const response = await api.post('/task', {
-                macaddress,
-                type,
-                title,
-                description,
-                when: `${date}T${hour}:00.000`
-            });
+            if (match.params.id) {
+                const response = await api.put(`/task/${match.params.id}`, {
+                    macaddress,
+                    done,
+                    type,
+                    title,
+                    description,
+                    when: `${date}T${hour}:00.000`
+                });
 
-            console.log(response);
-            console.log('Tarefa cadastrada com sucesso!');
+                console.log(response);
+                setRedirect(true);
+            } else {
+
+                const response = await api.post('/task', {
+                    macaddress,
+                    type,
+                    title,
+                    description,
+                    when: `${date}T${hour}:00.000`
+                });
+
+                console.log(response);
+                setRedirect(true);
+
+            }
         } catch (error) {
             console.log('Erro', error);
         }
+
     }
 
     return (
         <S.Container>
+            {redirect && <Redirect to="/"></Redirect>}
             <Header lateCount={lateCount}></Header>
-            <S.Form>
+            <S.Form onSubmit={e => e.preventDefault()}>
                 <S.TypeIcons>
                     {
                         TypeIcons.map((icon, index) => {
                             if (index > 0)
                                 return (
-                                    <button type="button" onClick={() => setType(index)}>
+                                    <button key={index} type="button" onClick={() => setType(index)}>
                                         <img src={icon} alt="Tipo da Tarefa" className={type && type != index && 'inative'}></img>
                                     </button>
                                 )
@@ -99,7 +136,7 @@ function Task({ match }) {
 
                 <S.Input>
                     <label>Título</label>
-                    <input type="text" placeholder="Título da Tarefa" onChange={e => setTitle(e.target.value)} value={title}></input>
+                    <input type="text" placeholder="Título da Tarefa" value={title} onInput={e => setTitle(e.target.value)}></input>
                 </S.Input>
 
                 <S.TextArea>

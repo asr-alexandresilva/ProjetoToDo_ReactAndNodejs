@@ -84,9 +84,9 @@ function Home() {
       <S.Title><h3>{exibirTituloTarefas(filterActived)}</h3></S.Title>
       <S.Content>
         {
-          tasks.map(task => (
-            <Link to={`/task/${task._id}`}>
-              <TaskCard type={task.type} title={task.title} when={task.when}></TaskCard>
+          tasks.map((task, index) => (
+            <Link key={index} to={`/task/${task._id}`}>
+              <TaskCard type={task.type} title={task.title} when={task.when} done={task.done}></TaskCard>
             </Link>
           ))
         }
