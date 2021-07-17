@@ -168,7 +168,7 @@ export const Options = styled.div`
     }
 
     div.containerButton{
-        display: flex;
+        display: ${props => props.id ? 'flex' : console.log(props.id)};
         justify-content: center;
         flex-direction: column;
         position: relative;

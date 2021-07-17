@@ -22,10 +22,10 @@ import TypeIcons from '../../utils/typeIcons';
 import iconeCalendario from '../../assets/calendario.png';
 import iconeRelogio from '../../assets/relogio.png';
 import iconeLixeira from '../../assets/lixeira.png';
+import isConnected from "../../utils/isConnected";
 
 function Task({ match }) {
     const [redirect, setRedirect] = useState(false);
-    const [lateCount, setLateCount] = useState();
     const [type, setType] = useState();
     const [id, setId] = useState(0);
     const [done, setDone] = useState(false);
@@ -33,19 +33,21 @@ function Task({ match }) {
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
     const [hour, setHour] = useState('');
-    const [macaddress, setMacaddress] = useState('11:11:11:11:11:11');
+    const [macaddress, setMacaddress] = useState(isConnected);
 
-    async function lateVerify() {
-        await api.get(`/task/filter/late/11:11:11:11:11:11`)
-            .then(response => {
-                setLateCount(response.data.length);
-            })
-            .catch();
+    async function remove() {
+        try {
+            const confirm = window.confirm('Deseja realmente remover a tarefa?');
+            if (confirm) {
+                const resp = await api.delete(`/task/${match.params.id}`);
+                setRedirect(true);
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     useEffect(() => {
-        lateVerify(); // carrega tarefas atrasadas
-
         // carrega tarefas quando vier id no parametro
         if (match.params.id) {
             loadTaskDetails();
@@ -70,23 +72,23 @@ function Task({ match }) {
         }
     }
 
+    function validFieldForm(field, msgError) {
+        if (!field)
+            return alert(msgError);
+    }
+
     async function save() {
         // validacao de formulario
-        if (!type)
-            return alert('Você informar o tipo da tarefa');
-        else if (!title)
-            return alert('Você informar o título da tarefa');
-        else if (!description)
-            return alert('Você informar a descrição da tarefa');
-        else if (!date)
-            return alert('Você informar a data da tarefa');
-        else if (!hour)
-            return alert('Você informar a hora da tarefa');
+        validFieldForm(type, "Informe o tipo da tarefa");
+        validFieldForm(title, "Informe o título da tarefa");
+        validFieldForm(description, "Informe a descrição da tarefa");
+        validFieldForm(date, "Informe a data da tarefa");
+        validFieldForm(hour, "Informe a hora da tarefa");
         // -------------------
         try {
             if (match.params.id) {
                 const response = await api.put(`/task/${match.params.id}`, {
-                    macaddress,
+                    macaddress: isConnected,
                     done,
                     type,
                     title,
@@ -99,7 +101,7 @@ function Task({ match }) {
             } else {
 
                 const response = await api.post('/task', {
-                    macaddress,
+                    macaddress: isConnected,
                     type,
                     title,
                     description,
@@ -119,7 +121,7 @@ function Task({ match }) {
     return (
         <S.Container>
             {redirect && <Redirect to="/"></Redirect>}
-            <Header lateCount={lateCount}></Header>
+            <Header></Header>
             <S.Form onSubmit={e => e.preventDefault()}>
                 <S.TypeIcons>
                     {
@@ -163,8 +165,13 @@ function Task({ match }) {
                         <label>CONCLUÍDO</label>
                     </div>
                     <div className="containerButton">
-                        <img src={iconeLixeira} className="icone" alt="Ícone Lixeira"></img>
-                        <button type="button">EXCLUIR</button>
+                        {
+                            match.params.id &&
+                            <>
+                                <img src={iconeLixeira} className="icone" alt="Ícone Lixeira"></img>
+                                <button type="button" onClick={remove}>EXCLUIR</button>
+                            </>
+                        }
                     </div>
                 </S.Options>
 

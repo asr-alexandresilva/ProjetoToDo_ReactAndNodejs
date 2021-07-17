@@ -5,11 +5,12 @@ React,
   useEffect, // funcao que disparada quando a tela esta carregada
 }
   from "react";
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 import * as S from "./styles";
 
 import api from "../../services/api";
+import isConnected from "../../utils/isConnected";
 
 // Nossos componentes
 import Header from "../../components/Header";
@@ -20,24 +21,14 @@ import TaskCard from "../../components/TaskCard";
 function Home() {
   const [filterActived, setFilterAcetived] = useState('all');
   const [tasks, setTasks] = useState([]);
-  const [lateCount, setLateCount] = useState();
 
   async function loadTasks() {
-    await api.get(`/task/filter/${filterActived}/11:11:11:11:11:11`)
+    await api.get(`/task/filter/${filterActived}/${isConnected}`)
       .then(response => {
         setTasks(response.data);
       })
       .catch();
   };
-
-  async function lateVerify() {
-    await api.get(`/task/filter/late/11:11:11:11:11:11`)
-      .then(response => {
-        setLateCount(response.data.length);
-        // console.log(response.data.length);
-      })
-      .catch();
-  }
 
   function notification() {
     setFilterAcetived('late');
@@ -57,12 +48,11 @@ function Home() {
 
   useEffect(() => {
     loadTasks(); // carrega as tarefas quando a tela for carregada
-    lateVerify(); // carrega tarefas atrasadas
   }, [filterActived]); // carrega as tarefas toda vez que o estado do filtro for alterado
 
   return (
     <S.Container>
-      <Header lateCount={lateCount} clickNotification={notification}></Header>
+      <Header clickNotification={notification}></Header>
       <S.FilterArea>
         <button type="button" onClick={() => setFilterAcetived("all")}>
           <FilterCard title="Todos" actived={filterActived === 'all'}></FilterCard>
